@@ -11,7 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{5,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,24}$/;
-const REGISTER_URL = "/home/join";
+const REGISTER_URL = "/register";
 
 const Register = () => {
     const userRef = useRef();
@@ -56,7 +56,6 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // if button enabled with JS hack
         const v1 = USER_REGEX.test(user);
         const v2 = PWD_REGEX.test(pwd);
         if (!v1 || !v2) {
@@ -64,8 +63,36 @@ const Register = () => {
             return;
         }
         try {
-            const response = await axios.post();
-        } catch (err) {}
+            const response = await axios.post(
+                REGISTER_URL,
+                JSON.stringify({
+                    nickname: user,
+                    pw: pwd,
+                    gender: "female",
+                    date: dateOfBirth
+                        .toLocaleDateString("ko-KR")
+                        .replace(/\./g, "")
+                        .split(" ")
+                        .map((v, i) => (i > 0 && v.length < 2 ? "0" + v : v))
+                        .join("/"),
+                }),
+                {
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+            console.log(response.data);
+            console.log(JSON.stringify(response));
+            setSuccess(true);
+        } catch (err) {
+            if (!err?.response) {
+                setErrMsg("No Server Response");
+            } else if (err.response?.status === 400) {
+                setErrMsg("이미 사용중인 아이디입니다.");
+            } else {
+                setErrMsg("서버 오류.");
+            }
+            errRef.current.focus();
+        }
     };
 
     return (
@@ -74,7 +101,7 @@ const Register = () => {
                 <section>
                     <h1>Success!</h1>
                     <p>
-                        <a href="#">Sign In</a>
+                        <a href="/">Sign In</a>
                     </p>
                 </section>
             ) : (
@@ -217,10 +244,14 @@ const Register = () => {
                             Must match the first password input field.
                         </p>
 
-                        <DatePicker
-                            selected={dateOfBirth}
-                            onChange={(date) => setDateOfBirth(date)}
-                        />
+                        <label>
+                            Date of Birth:
+                            <DatePicker
+                                dateFormat={"yyyy/MM/dd"}
+                                selected={dateOfBirth}
+                                onChange={(date) => setDateOfBirth(date)}
+                            />
+                        </label>
 
                         <button
                             disabled={
@@ -237,7 +268,7 @@ const Register = () => {
                         <br />
                         <span className="line">
                             {/*put router link here*/}
-                            <a href="#">Sign In</a>
+                            <a href="/">Sign In</a>
                         </span>
                     </p>
                 </section>
