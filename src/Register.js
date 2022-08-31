@@ -10,7 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{5,23}$/;
-const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,24}$/;
+const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*]).{8,24}$/;
 const REGISTER_URL = "/register";
 
 const Register = () => {
@@ -35,7 +35,7 @@ const Register = () => {
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
-        userRef.current.focus();
+        userRef.current?.focus();
     }, []);
 
     useEffect(() => {
@@ -53,6 +53,29 @@ const Register = () => {
     useEffect(() => {
         setErrMsg("");
     }, [user, pwd, matchPwd]);
+
+    // const handleDuplicate = async  (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const response = await axios.get(
+    //             "/duplicate",
+    //             {
+    //                 headers: { "nickname" : user }
+    //             }
+    //         )
+    //         console.log(response.data);
+    //         setErrMsg(response.data);
+    //     } catch (err) {
+    //         if (!err?.response) {
+    //             setErrMsg("No Server Response");
+    //         } else if (err.response?.status === 400) {
+    //             setErrMsg("이미 사용중인 아이디입니다.");
+    //         } else {
+    //             setErrMsg("서버 오류.");
+    //         }
+    //         errRef.current?.focus();
+    //     }
+    // }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -77,7 +100,7 @@ const Register = () => {
                         .join("/"),
                 }),
                 {
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Content-Type": "application/json" }
                 }
             );
             console.log(response.data);
@@ -91,7 +114,7 @@ const Register = () => {
             } else {
                 setErrMsg("서버 오류.");
             }
-            errRef.current.focus();
+            errRef.current?.focus();
         }
     };
 
@@ -113,7 +136,7 @@ const Register = () => {
                     >
                         {errMsg}
                     </p>
-                    <h1>Resgister</h1>
+                    <h1>Register</h1>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="username">
                             Username:
@@ -196,6 +219,7 @@ const Register = () => {
                             number and a special character.
                             <br />
                             Allowed special characters:{" "}
+                            <span aria-label="tilde">~</span>{" "}
                             <span aria-label="exclamation mark">!</span>{" "}
                             <span aria-label="at symbol">@</span>{" "}
                             <span aria-label="hashtag">#</span>{" "}
@@ -256,8 +280,6 @@ const Register = () => {
                         <button
                             disabled={
                                 !validName || !validPwd || !validMatch
-                                    ? true
-                                    : false
                             }
                         >
                             Sign Up
