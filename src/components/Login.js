@@ -1,21 +1,19 @@
-import React from 'react';
-import { useRef, useState, useEffect, useContext } from "react";
-import AuthContext from "./context/AuthProvider";
+import React from "react";
+import { useRef, useState, useEffect } from "react";
+import useAuth from "../hooks/userAuth";
 
-import axios from "./api/axios";
-const LOGIN_URL = '/login';
-
+import axios from "../api/axios";
+const LOGIN_URL = "/login";
 
 const Login = () => {
-
-    const { setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
 
     const userRef = useRef();
     const errRef = useRef();
 
-    const [user, setUser] = useState('');
-    const [pwd, setPwd] = useState('');
-    const [errMsg, setErrMsg] = useState('');
+    const [user, setUser] = useState("");
+    const [pwd, setPwd] = useState("");
+    const [errMsg, setErrMsg] = useState("");
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
@@ -23,7 +21,7 @@ const Login = () => {
     }, []);
 
     useEffect(() => {
-        setErrMsg('');
+        setErrMsg("");
     }, [user, pwd]);
 
     const handleSubmit = async (e) => {
@@ -33,27 +31,26 @@ const Login = () => {
             const response = await axios.post(
                 LOGIN_URL,
                 JSON.stringify({
-                        username: user,
-                        password: pwd
-                    }
-                ),
+                    username: user,
+                    password: pwd,
+                }),
                 {
-                    headers : { 'Content-Type' : 'application/json' }
+                    headers: { "Content-Type": "application/json" },
                 }
             );
             console.log(JSON.stringify(response?.data));
             // console.log(JSON.stringify(response));
             const accessToken = response?.data?.accessToken;
             const refreshToken = response?.data?.refreshToken;
-            setAuth({ user, pwd, accessToken, refreshToken});
-            setUser('');
-            setPwd('');
+            setAuth({ user, pwd, accessToken, refreshToken });
+            setUser("");
+            setPwd("");
             setSuccess(true);
         } catch (err) {
-            if(!err?.response) {
-                setErrMsg('No Server Response');
-            } else if(err.response?.status === 403) {
-                setErrMsg('Wrong Username or Password');
+            if (!err?.response) {
+                setErrMsg("No Server Response");
+            } else if (err.response?.status === 403) {
+                setErrMsg("Wrong Username or Password");
             } else if (err.response?.status === 401) {
                 setErrMsg("Unauthorized");
             } else {
@@ -61,9 +58,7 @@ const Login = () => {
             }
             errRef.current.focus();
         }
-
-    }
-
+    };
 
     return (
         <>
@@ -72,12 +67,18 @@ const Login = () => {
                     <h1>You are logged in!</h1>
                     <br />
                     <p>
-                        <a href="#">Go to Home</a>
+                        <a href="src/components/Login#">Go to Home</a>
                     </p>
                 </section>
             ) : (
                 <section>
-                    <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+                    <p
+                        ref={errRef}
+                        className={errMsg ? "errmsg" : "offscreen"}
+                        aria-live="assertive"
+                    >
+                        {errMsg}
+                    </p>
                     <h1>Sign In</h1>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="username">Username:</label>
@@ -101,14 +102,15 @@ const Login = () => {
                         <button>Sign In</button>
                     </form>
                     <p>
-                        Need an Account?<br />
+                        Need an Account?
+                        <br />
                         <span className="line">
-                    {/*put router link here*/}
-                            <a href="#">Sign Up</a>
-                </span>
+                {/*put router link here*/}
+                            <a href="src/components/Login#">Sign Up</a>
+            </span>
                     </p>
                 </section>
-            )};
+            )}
         </>
     );
 };
