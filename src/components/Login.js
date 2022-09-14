@@ -1,12 +1,17 @@
 import React from "react";
 import { useRef, useState, useEffect } from "react";
-import useAuth from "../hooks/userAuth";
+import useAuth from "../hooks/useAuth";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import axios from "../api/axios";
-const LOGIN_URL = "/login";
+const LOGIN_URL = "/api/auth/signin";
 
 const Login = () => {
     const { setAuth } = useAuth();
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
 
     const userRef = useRef();
     const errRef = useRef();
@@ -14,7 +19,6 @@ const Login = () => {
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
     const [errMsg, setErrMsg] = useState("");
-    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         userRef.current.focus();
@@ -35,17 +39,21 @@ const Login = () => {
                     password: pwd,
                 }),
                 {
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    withCredentials: true
                 }
             );
-            console.log(JSON.stringify(response?.data));
+            // console.log(JSON.stringify(response?.data));
             // console.log(JSON.stringify(response));
-            const accessToken = response?.data?.accessToken;
-            const refreshToken = response?.data?.refreshToken;
-            setAuth({ user, pwd, accessToken, refreshToken });
+            const accessToken = response?.data?.access_token;
+            // const refreshToken = response?.data?.refreshToken;
+            const roles = response?.data?.roles;
+            setAuth({ user, pwd, roles, accessToken });
             setUser("");
             setPwd("");
-            setSuccess(true);
+            navigate(from, { replace : true });
         } catch (err) {
             if (!err?.response) {
                 setErrMsg("No Server Response");
@@ -61,57 +69,45 @@ const Login = () => {
     };
 
     return (
-        <>
-            {success ? (
-                <section>
-                    <h1>You are logged in!</h1>
-                    <br />
-                    <p>
-                        <a href="src/components/Login#">Go to Home</a>
-                    </p>
-                </section>
-            ) : (
-                <section>
-                    <p
-                        ref={errRef}
-                        className={errMsg ? "errmsg" : "offscreen"}
-                        aria-live="assertive"
-                    >
-                        {errMsg}
-                    </p>
-                    <h1>Sign In</h1>
-                    <form onSubmit={handleSubmit}>
-                        <label htmlFor="username">Username:</label>
-                        <input
-                            type="text"
-                            id="username"
-                            ref={userRef}
-                            autoComplete="off"
-                            onChange={(e) => setUser(e.target.value)}
-                            value={user}
-                            required
-                        />
-                        <label htmlFor="password">Password:</label>
-                        <input
-                            type="password"
-                            id="password"
-                            onChange={(e) => setPwd(e.target.value)}
-                            value={pwd}
-                            required
-                        />
-                        <button>Sign In</button>
-                    </form>
-                    <p>
-                        Need an Account?
-                        <br />
-                        <span className="line">
+        <section>
+            <p
+                ref={errRef}
+                className={errMsg ? "errmsg" : "offscreen"}
+                aria-live="assertive"
+            >
+                {errMsg}
+            </p>
+            <h1>Sign In</h1>
+            <form onSubmit={handleSubmit}>
+                <label htmlFor="username">Username:</label>
+                <input
+                    type="text"
+                    id="username"
+                    ref={userRef}
+                    autoComplete="off"
+                    onChange={(e) => setUser(e.target.value)}
+                    value={user}
+                    required
+                />
+                <label htmlFor="password">Password:</label>
+                <input
+                    type="password"
+                    id="password"
+                    onChange={(e) => setPwd(e.target.value)}
+                    value={pwd}
+                    required
+                />
+                <button>Sign In</button>
+            </form>
+            <p>
+                Need an Account?
+                <br />
+                <span className="line">
                 {/*put router link here*/}
-                            <a href="src/components/Login#">Sign Up</a>
+                    <Link to="/register">Sign Up</Link>
             </span>
-                    </p>
-                </section>
-            )}
-        </>
+            </p>
+        </section>
     );
 };
 

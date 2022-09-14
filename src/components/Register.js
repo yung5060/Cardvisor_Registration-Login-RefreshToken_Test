@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "../api/axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Link } from "react-router-dom";
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{5,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@#$%^&*]).{8,24}$/;
@@ -124,7 +125,7 @@ const Register = () => {
                 <section>
                     <h1>Success!</h1>
                     <p>
-                        <a href="/Users/yung8/Code/React/DaveGray/public">Sign In</a>
+                        <Link to="/">Sign In</Link>
                     </p>
                 </section>
             ) : (
@@ -290,7 +291,7 @@ const Register = () => {
                         <br />
                         <span className="line">
                             {/*put router link here*/}
-                            <a href="/Users/yung8/Code/React/DaveGray/public">Sign In</a>
+                            <Link to="/">Sign In</Link>
                         </span>
                     </p>
                 </section>

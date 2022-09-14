@@ -1,6 +1,5 @@
 import Register from "./components/Register";
 import Login from "./components/Login";
-import {Routes, Route} from "react-router-dom";
 import Layout from "./components/Layout";
 import RequireAuth from "./components/RequireAuth";
 import Home from "./components/Home";
@@ -8,6 +7,8 @@ import LinkPage from "./components/LinkPage";
 import Lounge from "./components/Lounge";
 import Missing from "./components/Missing";
 import Unauthorized from "./components/Unauthorized";
+import Admin from "./components/Admin";
+import {Routes, Route} from "react-router-dom";
 
 const ROLES = {
     'User' : 'ROLE_USER',
