@@ -20,7 +20,7 @@ const Users = () => {
                 console.log(response.data);
                 isMounted && setUsers(response.data);
             } catch (err) {
-                console.error(err);
+                console.log(err);
                 navigate('/login', { state: { from: location }, replace: true });
             }
 
